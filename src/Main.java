@@ -20,7 +20,7 @@ public class Main implements MouseListener, KeyListener {
 	private final BufferStrategy buffer;
 
 	public Main() {
-		window = new JFrame("ホモホモホモ");
+		window = new JFrame("ホモホモ💩ホモ");
 		window.setSize(800, 600);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
