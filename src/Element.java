@@ -1,7 +1,9 @@
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 
 
@@ -10,16 +12,18 @@ public class Element {
 	public boolean endcheck=true;
 	public boolean erase = false;
 	public int specolor = 0;
-	
+
 	public enum Type {RED, GREEN, YELLOW, BLUE};
 
 	public int x, y;
 	public int gx, gy;
 	public Type type;
 	private final Stage stage;
+	private double angle;
+	private int count;
+	private double scale;
 	private static final BufferedImage[] images;
 	static BufferedImage img;
-	
 	static {
 		images = new BufferedImage[6];
 		try {
@@ -43,6 +47,7 @@ public class Element {
 		this.gx = getX(x);
 		this.gy = getY(y);
 		this.type = Utils.randomSelect(Type.values());
+		count = (int)(Math.random() * 20);
 	}
 	void step() {
 		if(isErasing){
@@ -63,16 +68,16 @@ public class Element {
 				isLifting = false;
 			}
 		}
-		if(endcheck = false){
-			
-		}
+		count++;
+		angle = Math.sin(count * 0.1) * 0.1;
+		scale = 1 + Math.sin(count * 0.1) * 0.05;
 	}
 
 	void draw(Graphics2D g) {
 
 		BufferedImage image = null;
 		BufferedImage image2= null;
-		image2 = img; 
+		image2 = img;
 		switch (type) {
 		case RED:
 			image = images[0];
@@ -101,9 +106,18 @@ public class Element {
 			g.drawImage(img,gx,gy,null);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
 		}
-		if(!killed) g.drawImage(image, gx, gy, stage.elementSize, stage.elementSize, null);
+		if(!killed) {
+			AffineTransform af = g.getTransform();
+			int cx = gx + stage.elementSize/2, cy = gy + stage.elementSize / 2;
+			g.translate(cx, cy);
+			g.scale(scale, scale);
+			g.rotate(angle);
+			g.translate(-cx, -cy);
+			g.drawImage(image, gx, gy, stage.elementSize, stage.elementSize, null);
+			g.setTransform(af);
+		}
 	}
-	
+
 	// 消す
 	int target_y = -1;
 	int vy = 0;
@@ -115,7 +129,7 @@ public class Element {
 		isErasing = true;
 		killed = true;
 	}
-	
+
 	// 落とす
 	public boolean isFalling = false;
 	public void fall(int y){
@@ -124,7 +138,7 @@ public class Element {
 		vy = 3;
 		isFalling = true;
 	}
-	
+
 	// 上げる
 	public boolean isLifting = false;
 	public void lift(){
@@ -132,7 +146,7 @@ public class Element {
 		vy = -3;
 		isLifting = true;
 	}
-	
+
 	public Type getNextColor(){
 		switch (type) {
 		case RED:
@@ -151,7 +165,7 @@ public class Element {
 	int getX(int x) { //左上座標
 		return stage.window.getWidth() / 2 - stage.elementAreaWidth / 2 + stage.elementSize * x;
 	}
-	
+
 	int getY(int y) {
 		if (y == stage.height-1) return stage.window.getHeight() - stage.elementAreaHeight + stage.elementSize * y - 10;
 		return stage.window.getHeight() - stage.elementAreaHeight + stage.elementSize * y - 20;

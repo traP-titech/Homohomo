@@ -20,7 +20,6 @@ public class GameScene extends Scene {
 
 	@Override
 	Scene mainLoop(Graphics2D g) {
-		phase = 5;
 		stage.draw(g);
 		switch (phase) {
 		case 0: {
@@ -93,5 +92,10 @@ public class GameScene extends Scene {
 	@Override
 	void mouseDragged(MouseEvent e) {
 		stage.mouseDragged(e);
+	}
+	
+	@Override
+	void mouseMoved(MouseEvent e) {
+		stage.mouseMoved(e);
 	}
 }

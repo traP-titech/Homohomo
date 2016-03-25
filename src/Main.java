@@ -28,11 +28,13 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
 		window.createBufferStrategy(2);
+		buffer = window.getBufferStrategy();
+
+		currentScene = new TitleScene(window);
+
 		window.addKeyListener(this);
 		window.addMouseListener(this);
 		window.addMouseMotionListener(this);
-		buffer = window.getBufferStrategy();
-		currentScene = new GameScene(window);
 
 		new Timer().schedule(new TimerTask(){
 
@@ -122,6 +124,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		// TODO 自動生成されたメソッド・スタブ
+		currentScene.mouseMoved(e);
 
 	}
 }
