@@ -112,7 +112,6 @@ public class Stage {
 			if(clicked){
 				int id = selectElement(mx,my);
 				if(id!=-1){
-					System.out.println(id);
 					int x = id/height;
 					int y = id%height;
 					// erase calculation
