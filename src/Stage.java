@@ -87,19 +87,19 @@ public class Stage {
 
 		buttons[0] = new Button(22,
 				window.getHeight() - elementAreaHeight + 295,
-				175, 46, 20, 20, true, "ほも", japaneseFont);
+				175, 46, 20, 20, true, "A", japaneseFont);
 
 		buttons[1] = new Button(22,
 				window.getHeight() - elementAreaHeight + 350,
-				175, 46, 20, 20, true, "ばら", japaneseFont);
+				175, 46, 20, 20, true, "B", japaneseFont);
 
 		buttons[2] = new Button(603,
 				window.getHeight() - elementAreaHeight + 295,
-				175, 46, 20, 20, false, "れず", japaneseFont);
+				175, 46, 20, 20, false, "C", japaneseFont);
 
 		buttons[3] = new Button(603,
 				window.getHeight() - elementAreaHeight + 350,
-				175, 46, 20, 20, false, "ゆり", japaneseFont);
+				175, 46, 20, 20, false, "D", japaneseFont);
 
 		buttons[4] = new Button(603,
 				window.getHeight() - elementAreaHeight + 410,

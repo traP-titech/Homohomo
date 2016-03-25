@@ -22,7 +22,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 	private Scene currentScene;
 
 	public Main() {
-		window = new JFrame("ホモホモ");
+		window = new JFrame("BomoChain");
 		window.setSize(800, 600);
 		window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
