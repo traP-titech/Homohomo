@@ -30,7 +30,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 		window.createBufferStrategy(2);
 		buffer = window.getBufferStrategy();
 
-		currentScene = new GameScene(window);
+		currentScene = new TitleScene(window);
 
 		window.addKeyListener(this);
 		window.addMouseListener(this);

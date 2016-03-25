@@ -27,12 +27,14 @@ public class Stage {
 	}
 	private State state;
 
+	boolean pauseFlag = false;
 	boolean clicked = false;
 	int mx, my;
 	int elementSize;
 	Font englishFont, japaneseFont;
 	long score = 1145141919810L;
 	Button[] buttons = new Button[5];
+	private PauseEffect pauseEffect;
 
 	public Stage(JFrame window, int width, int height) {
 		this.window = window;
@@ -74,6 +76,17 @@ public class Stage {
 		buttons[4] = new Button(603,
 				window.getHeight() - elementAreaHeight + 410,
 				175, 46, 20, 20, true, "ポーズ", japaneseFont);
+
+		buttons[4].setListener(new ButtonListener() {
+
+			@Override
+			public void onPressed() {
+				pauseFlag = true;
+				pauseEffect.start();
+			}
+		});
+
+		pauseEffect = new PauseEffect(buttons[4]);
 	}
 
 	Vector<Vector<Integer>> eraselist;
@@ -209,8 +222,9 @@ public class Stage {
 			break;
 		}
 		clicked = false;
-		
+
 		for (Button b : buttons) b.step();
+		pauseEffect.step();
 	}
 
 	void draw(Graphics2D g) {
@@ -233,8 +247,8 @@ public class Stage {
 				window.getWidth() / 2 + elementAreaWidth / 2,
 				window.getHeight() - elementSize - 23
 				);
-		
-		
+
+
 		g.setFont(englishFont);
 		g.setColor(Color.BLACK);
 		g.drawString("NEXT",
@@ -304,12 +318,21 @@ public class Stage {
 		//灰色フィルター
 		g.setColor(new Color(100, 100, 100, 100));
 		g.fillRect(window.getWidth()/2 - elementAreaWidth / 2, window.getHeight() - elementAreaHeight + elementSize * (height-1) - 10, elementAreaWidth, elementSize);
+
+		pauseEffect.draw(g);
 	}
 
 	void mousePressed(MouseEvent e) {
+		if (pauseFlag) {
+			pauseFlag = false;
+			pauseEffect.end();
+			return;
+		}
 		this.mx = e.getX();
 		this.my = e.getY();
 		clicked = true;
+
+		for (Button b : buttons) b.mousePressed(e);
 	}
 
 	void mouseDragged(MouseEvent e) {
