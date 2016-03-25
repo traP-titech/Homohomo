@@ -94,4 +94,9 @@ public class GameScene extends Scene {
 	void mouseDragged(MouseEvent e) {
 		stage.mouseDragged(e);
 	}
+	
+	@Override
+	void mouseMoved(MouseEvent e) {
+		stage.mouseMoved(e);
+	}
 }

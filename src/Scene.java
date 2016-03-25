@@ -7,4 +7,5 @@ public abstract class Scene {
 
 	void mousePressed(MouseEvent e){}
 	void mouseDragged(MouseEvent e){}
+	void mouseMoved(MouseEvent e){}
 }

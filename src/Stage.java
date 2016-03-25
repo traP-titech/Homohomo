@@ -17,7 +17,7 @@ public class Stage {
 	public final JFrame window;
 	public final int width, height;
 	private final Element[][] elements;
-	
+
 	private enum State{
 		WAITING,
 		ERASING,
@@ -32,6 +32,7 @@ public class Stage {
 	int elementSize;
 	Font englishFont, japaneseFont;
 	long score = 1145141919810L;
+	Button[] buttons = new Button[5];
 
 	public Stage(JFrame window, int width, int height) {
 		this.window = window;
@@ -39,10 +40,10 @@ public class Stage {
 		this.height = height;
 		this.elements = new Element[width][height];
 		this.topelements = new Element[width];
-		
+
 		elementAreaWidth = elementAreaHeight * width / height;
 		elementSize = elementAreaHeight / height;
-		
+
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				elements[i][j] = new Element(this, i, j);
@@ -53,8 +54,28 @@ public class Stage {
 
 		englishFont = Utils.createFont("helsinki.ttf").deriveFont(Font.PLAIN, 35);
 		japaneseFont = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 27);
+
+		buttons[0] = new Button(22,
+				window.getHeight() - elementAreaHeight + 295,
+				175, 46, 20, 20, true, "ほも", japaneseFont);
+
+		buttons[1] = new Button(22,
+				window.getHeight() - elementAreaHeight + 350,
+				175, 46, 20, 20, true, "ばら", japaneseFont);
+
+		buttons[2] = new Button(603,
+				window.getHeight() - elementAreaHeight + 295,
+				175, 46, 20, 20, false, "れず", japaneseFont);
+
+		buttons[3] = new Button(603,
+				window.getHeight() - elementAreaHeight + 350,
+				175, 46, 20, 20, false, "ゆり", japaneseFont);
+
+		buttons[4] = new Button(603,
+				window.getHeight() - elementAreaHeight + 410,
+				175, 46, 20, 20, true, "ポーズ", japaneseFont);
 	}
-	
+
 	Vector<Vector<Integer>> eraselist;
 	int puzzleBFS(int x, int y){
 		int[][] visited = new int[width][height-1];
@@ -93,10 +114,10 @@ public class Stage {
 		}
 		return res;
 	}
-	
+
 	int erasemax;
 	int eraseiter;
-	
+
 	Element[] topelements;
 
 	void step() {
@@ -188,6 +209,8 @@ public class Stage {
 			break;
 		}
 		clicked = false;
+		
+		for (Button b : buttons) b.step();
 	}
 
 	void draw(Graphics2D g) {
@@ -210,71 +233,8 @@ public class Stage {
 				window.getWidth() / 2 + elementAreaWidth / 2,
 				window.getHeight() - elementSize - 23
 				);
-		g.setColor(new Color(252, 181, 96));
-		g.fillRoundRect(
-				window.getWidth() / 2 - elementAreaWidth / 2 - 10,
-				45,
-				elementAreaWidth + 20,
-				40,
-				20,
-				20
-				);
-		g.fillRoundRect(15,
-				window.getHeight() - elementAreaHeight + 50,
-				190, 350, 20, 20);
-
-		g.fillRoundRect(595,
-				window.getHeight() - elementAreaHeight + 50,
-				190, 350, 20, 20);
-
-		g.setColor(new Color(247, 155, 55));
-		g.fillRoundRect(22,
-				window.getHeight() - elementAreaHeight + 295,
-				175, 46, 20, 20);
-		g.fillRoundRect(22,
-				window.getHeight() - elementAreaHeight + 350,
-				175, 46, 20, 20);
-		g.fillRoundRect(603,
-				window.getHeight() - elementAreaHeight + 295,
-				175, 46, 20, 20);
-		g.fillRoundRect(603,
-				window.getHeight() - elementAreaHeight + 350,
-				175, 46, 20, 20);
-		g.fillRoundRect(603,
-				window.getHeight() - elementAreaHeight + 410,
-				175, 46, 20, 20);
-		g.setColor(new Color(250, 110, 30));
-		g.drawRoundRect(
-				window.getWidth() / 2 - elementAreaWidth / 2 - 10,
-				45,
-				elementAreaWidth + 20,
-				40,
-				20,
-				20
-				);
-		g.drawRoundRect(15,
-				window.getHeight() - elementAreaHeight + 50,
-				190, 350, 20, 20);
-
-		g.drawRoundRect(595,
-				window.getHeight() - elementAreaHeight + 50,
-				190, 350, 20, 20);
-
-		g.drawRoundRect(22,
-				window.getHeight() - elementAreaHeight + 295,
-				175, 46, 20, 20);
-		g.drawRoundRect(22,
-				window.getHeight() - elementAreaHeight + 350,
-				175, 46, 20, 20);
-		g.drawRoundRect(603,
-				window.getHeight() - elementAreaHeight + 295,
-				175, 46, 20, 20);
-		g.drawRoundRect(603,
-				window.getHeight() - elementAreaHeight + 350,
-				175, 46, 20, 20);
-		g.drawRoundRect(603,
-				window.getHeight() - elementAreaHeight + 410,
-				175, 46, 20, 20);
+		
+		
 		g.setFont(englishFont);
 		g.setColor(Color.BLACK);
 		g.drawString("NEXT",
@@ -296,10 +256,6 @@ public class Stage {
 				50,
 				window.getHeight() - elementAreaHeight
 				);
-		g.drawString("ポーズ",
-				window.getWidth() / 2 + elementAreaWidth / 2 + 70,
-				window.getHeight() - 40
-				);
 
 		//エレメント描画
 		for (int i = 0; i < width; i++) {
@@ -307,6 +263,39 @@ public class Stage {
 				elements[i][j].draw(g);
 			}
 		}
+		g.setColor(new Color(252, 181, 96));
+		g.fillRoundRect(
+				window.getWidth() / 2 - elementAreaWidth / 2 - 10,
+				45,
+				elementAreaWidth + 20,
+				40,
+				20,
+				20
+				);
+		g.fillRoundRect(15,
+				window.getHeight() - elementAreaHeight + 50,
+				190, 350, 20, 20);
+
+		g.fillRoundRect(595,
+				window.getHeight() - elementAreaHeight + 50,
+				190, 350, 20, 20);
+		g.setColor(new Color(250, 110, 30));
+		g.drawRoundRect(
+				window.getWidth() / 2 - elementAreaWidth / 2 - 10,
+				45,
+				elementAreaWidth + 20,
+				40,
+				20,
+				20
+				);
+		g.drawRoundRect(15,
+				window.getHeight() - elementAreaHeight + 50,
+				190, 350, 20, 20);
+
+		g.drawRoundRect(595,
+				window.getHeight() - elementAreaHeight + 50,
+				190, 350, 20, 20);
+		for (Button b : buttons) b.draw(g);
 
 		//マウス座標表示
 		g.setColor(Color.RED);
@@ -328,6 +317,12 @@ public class Stage {
 		this.my = e.getY();
 	}
 
+	void mouseMoved(MouseEvent e) {
+		for (Button b : buttons) {
+			b.mouseMoved(e);
+		}
+	}
+
 	// mx,myを与えると、それが含まれるElement(x,y)についてx*height+yを返す
 	// 該当なしの場合は-1を返す
 	int selectElement(int mx, int my) {
@@ -337,7 +332,7 @@ public class Stage {
 			Element e = elements[x][y];
 			if(!(e instanceof NullElement)){
 				float dx = (float)(e.getX(x)+elementSize/2f - mx);
-				float dy = (float)(e.getY(y)+elementSize/2f - my); 
+				float dy = (float)(e.getY(y)+elementSize/2f - my);
 				if(dx*dx + dy*dy <= elementSize*elementSize){
 					// pushed
 					return x*height+y;
