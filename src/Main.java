@@ -22,7 +22,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 	private Stage stage;
 
 	public Main() {
-		window = new JFrame("ホモホモ");
+		window = new JFrame("ホモホモ💩ホモ");
 		window.setSize(800, 600);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
