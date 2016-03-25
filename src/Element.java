@@ -1,9 +1,33 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
+class Bakuhatsu{
+	BufferedImage img;
+	Bakuhatsu(){
+		try {
+			img = ImageIO.read(Main.class.getResource("bomb.png"));
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+	void draw(Graphics2D g){
+		g.drawImage(img,100,100,null);
+	}
+	void step(){
+		
+	}
+}
 public class Element {
+	
+	public boolean endcheck=true;
+	public boolean erase = false;
+	public int specolor = 0;
 
-	private enum Type {RED, GREEN, YELLOW};
+	private enum Type {RED, GREEN, YELLOW,BLUE};
 
 	private final int x, y;
 	private final Type type;
@@ -15,14 +39,20 @@ public class Element {
 		this.y = y;
 		this.type = Utils.randomSelect(Type.values());
 	}
-
+	void erase(){
+		erase = true;
+	}
 	void step() {
+		if(endcheck = false){
+			
+		}
 
 	}
 
 	void draw(Graphics2D g) {
 
 		Color color = null;
+		
 		switch (type) {
 		case RED:
 			color = Color.RED;
@@ -33,6 +63,14 @@ public class Element {
 		case YELLOW:
 			color = Color.YELLOW;
 			break;
+		case BLUE:
+			color = Color.BLUE;
+			break;
+		}
+		if(specolor == 1){
+			color = Color.BLACK;
+		}else if(specolor == 2){
+			color = Color.WHITE;
 		}
 
 		g.setColor(color);

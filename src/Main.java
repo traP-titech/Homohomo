@@ -22,7 +22,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 	private Stage stage;
 
 	public Main() {
-		window = new JFrame("ホモホモ💩ホモ");
+		window = new JFrame("ホモホモ");
 		window.setSize(800, 600);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
@@ -31,7 +31,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 		window.addMouseListener(this);
 		window.addMouseMotionListener(this);
 		buffer = window.getBufferStrategy();
-		stage = new Stage(window, 10, 11);
+		stage = new Stage(window, 8, 11);
 
 		new Timer().schedule(new TimerTask(){
 
@@ -58,7 +58,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 	}
 
 	void mainLoop(Graphics2D g) {
-		g.setColor(Color.WHITE);
+		g.setColor(Color.GRAY);
 		g.fillRect(0, 0, window.getWidth(), window.getHeight());
 		stage.mainLoop(g);
 	}

@@ -1,3 +1,4 @@
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -15,8 +16,11 @@ public class Stage {
 
 	int mx, my;
 	int elementSize;
+	public Bakuhatsu baku;
+	int ballcount=0;
 
 	public Stage(JFrame window, int width, int height) {
+		baku = new Bakuhatsu();
 		this.window = window;
 		this.width = width;
 		this.height = height;
@@ -38,15 +42,26 @@ public class Stage {
 
 	void step() {
 		//エレメント更新
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				elements[i][j].step();
+		
+		System.out.println(ballcount);
+		if(ballcount>=60){
+			ballcount = 0;
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height-1; j++) {
+					elements[i][j] = elements[i][j+1];
+				}
+			}
+		}else{
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+					elements[i][j].step();
+				}
 			}
 		}
 	}
-
+	int bombtimer=60;
 	void draw(Graphics2D g) {
-
+		bombtimer--;
 		//エレメント描画
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -59,8 +74,13 @@ public class Stage {
 		g.fillOval(mx-5, my-5, 10, 10);
 
 		//灰色フィルター
-		g.setColor(new Color(100, 100, 100, 100));
+		g.setColor(new Color(100, 100, 100,100));
 		g.fillRect(window.getWidth()/2 - elementAreaWidth / 2, window.getHeight() - elementAreaHeight + elementSize * (height-1) - 20, elementAreaWidth, elementSize);
+		if(bombtimer <= 1){
+			bombtimer = 60;
+		}
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,bombtimer/60f));
+		baku.draw(g);
 	}
 
 	void mousePressed(MouseEvent e) {
