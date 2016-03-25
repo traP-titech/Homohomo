@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 
+import java.text.DecimalFormat;
+
 public class Stage {
 
 	public final int elementAreaHeight = 480;
@@ -18,7 +20,8 @@ public class Stage {
 	int mx, my;
 	int elementSize;
 	Font englishFont, englishFontLarge, japaneseFont, japaneseFontSmall, japaneseFontLarge;
-	long score = 12345678L;
+	DecimalFormat scoreFormat;
+	long score = 931L;
 
 	public Stage(JFrame window, int width, int height) {
 		this.window = window;
@@ -39,6 +42,8 @@ public class Stage {
 		japaneseFont = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 27);
 		japaneseFontSmall = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 21);
 		japaneseFontLarge = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 32);
+		
+		scoreFormat = new DecimalFormat("00000000");
 	}
 
 	void step() {
@@ -140,7 +145,7 @@ public class Stage {
 		g.drawString("NEXT",
 				window.getWidth() / 2 - elementAreaWidth / 2 - 110,
 				window.getHeight() - elementSize + 15);
-		g.drawString(String.valueOf(score),
+		g.drawString(scoreFormat.format(score),
 				window.getWidth() / 2 + elementAreaWidth / 2 + 30,
 				window.getHeight() - elementAreaHeight + 10);
 		g.setFont(englishFontLarge);
