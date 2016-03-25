@@ -1,10 +1,30 @@
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
+class Bakuhatsu{
+	BufferedImage img;
+	Bakuhatsu(){
+		try {
+			img = ImageIO.read(Main.class.getResource("bomb.png"));
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+	void draw(Graphics2D g){
+		g.drawImage(img,100,100,null);
+	}
+	void step(){
+		
+	}
+}
 public class Element {
+	
+	public boolean endcheck=true;
+	public boolean erase = false;
+	public int specolor = 0;
 
 	public enum Type {RED, GREEN, YELLOW, BLUE};
 
@@ -37,7 +57,6 @@ public class Element {
 		this.gy = getY(y);
 		this.type = Utils.randomSelect(Type.values());
 	}
-
 	void step() {
 		if(isErasing){
 			++erasecnt;
@@ -57,6 +76,9 @@ public class Element {
 				isLifting = false;
 			}
 		}
+		if(endcheck = false){
+			
+		}
 	}
 
 	void draw(Graphics2D g) {
@@ -75,6 +97,11 @@ public class Element {
 		case BLUE:
 			image = images[3];
 			break;
+		}
+		if(specolor == 1){
+			image = images[5];
+		}else if(specolor == 2){
+			image = images[4];
 		}
 
 		if(!killed) g.drawImage(image, gx, gy, stage.elementSize, stage.elementSize, null);

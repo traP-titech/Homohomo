@@ -1,4 +1,5 @@
 import java.awt.BasicStroke;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -34,8 +35,11 @@ public class Stage {
 	static final int LIFT_REM_TURN = 5;
 	int liftRemainTurn = 5;
 	long score = 1145141919810L;
+	public Bakuhatsu baku;
+	int ballcount=0;
 
 	public Stage(JFrame window, int width, int height) {
+		baku = new Bakuhatsu();
 		this.window = window;
 		this.width = width;
 		this.height = height;
@@ -106,9 +110,20 @@ public class Stage {
 
 	void step() {
 		//エレメント更新
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				elements[i][j].step();
+		
+		System.out.println(ballcount);
+		if(ballcount>=60){
+			ballcount = 0;
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height-1; j++) {
+					elements[i][j] = elements[i][j+1];
+				}
+			}
+		}else{
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+					elements[i][j].step();
+				}
 			}
 		}
 		// フェーズ分け
@@ -204,9 +219,8 @@ public class Stage {
 		}
 		clicked = false;
 	}
-
+	int bombtimer=60;
 	void draw(Graphics2D g) {
-
 		//UI描画
 		g.setColor(new Color(100, 100, 100, 100));
 		g.fillRoundRect(
@@ -316,6 +330,7 @@ public class Stage {
 				window.getHeight() - 40
 				);
 
+		bombtimer--;
 		//エレメント描画
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -330,6 +345,11 @@ public class Stage {
 		//灰色フィルター
 		g.setColor(new Color(100, 100, 100, 100));
 		g.fillRect(window.getWidth()/2 - elementAreaWidth / 2, window.getHeight() - elementAreaHeight + elementSize * (height-1) - 10, elementAreaWidth, elementSize);
+		if(bombtimer <= 1){
+			bombtimer = 60;
+		}
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,bombtimer/60f));
+		baku.draw(g);
 	}
 
 	void mousePressed(MouseEvent e) {

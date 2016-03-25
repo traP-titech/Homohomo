@@ -3,10 +3,11 @@ import java.awt.FontFormatException;
 import java.io.IOException;
 import java.io.InputStream;
 
+
 public class Utils {
 
 	static <T> T randomSelect(T[] array) {
-		return array[(int)(Math.random() * array.length)];
+		return array[(int)((Math.random() * array.length))];
 	}
 
 	static Font createFont(String filename){
