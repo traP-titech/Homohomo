@@ -18,7 +18,7 @@ public class Stage {
 	int mx, my;
 	int elementSize;
 	Font englishFont, japaneseFont;
-	long score = 1145141919810L;
+	long score = 12345678L;
 
 	public Stage(JFrame window, int width, int height) {
 		this.window = window;
@@ -58,7 +58,7 @@ public class Stage {
 				elementAreaHeight + 20,
 				10,
 				10
-				);
+				);	// メイン
 		g.setColor(Color.BLACK);
 		g.setStroke(new BasicStroke(1.5f));
 		g.drawLine(
@@ -66,7 +66,7 @@ public class Stage {
 				window.getHeight() - elementSize - 23,
 				window.getWidth() / 2 + elementAreaWidth / 2,
 				window.getHeight() - elementSize - 23
-				);
+				);	// メインのNEXTとのセパレータ
 		g.setColor(new Color(252, 181, 96));
 		g.fillRoundRect(
 				window.getWidth() / 2 - elementAreaWidth / 2 - 10,
@@ -75,31 +75,31 @@ public class Stage {
 				40,
 				20,
 				20
-				);
+				);	// 上のバー
 		g.fillRoundRect(15,
 				window.getHeight() - elementAreaHeight + 50,
-				190, 350, 20, 20);
+				190, 350, 20, 20);	// 左ボックス
 
 		g.fillRoundRect(595,
 				window.getHeight() - elementAreaHeight + 50,
-				190, 350, 20, 20);
+				190, 350, 20, 20);	// 右ボックス
 
 		g.setColor(new Color(247, 155, 55));
 		g.fillRoundRect(22,
 				window.getHeight() - elementAreaHeight + 295,
-				175, 46, 20, 20);
+				175, 46, 20, 20);	// 左ボックス特殊上
 		g.fillRoundRect(22,
 				window.getHeight() - elementAreaHeight + 350,
-				175, 46, 20, 20);
+				175, 46, 20, 20);	// 左ボックス特殊下
 		g.fillRoundRect(603,
 				window.getHeight() - elementAreaHeight + 295,
-				175, 46, 20, 20);
+				175, 46, 20, 20);	// 右ボックス特殊上
 		g.fillRoundRect(603,
 				window.getHeight() - elementAreaHeight + 350,
-				175, 46, 20, 20);
+				175, 46, 20, 20);	// 右ボックス特殊下
 		g.fillRoundRect(603,
 				window.getHeight() - elementAreaHeight + 410,
-				175, 46, 20, 20);
+				175, 46, 20, 20);	// 右下ポーズボタン
 		g.setColor(new Color(250, 110, 30));
 		g.drawRoundRect(
 				window.getWidth() / 2 - elementAreaWidth / 2 - 10,
@@ -140,6 +140,9 @@ public class Stage {
 		g.drawString(String.valueOf(score),
 				window.getWidth() / 2 + elementAreaWidth / 2 + 30,
 				window.getHeight() - elementAreaHeight + 10);
+		g.drawString("10"/*残りターン数*/,
+				50,
+				window.getHeight() - elementAreaHeight);
 		g.setFont(japaneseFont);
 		g.drawString("すこあ",
 				window.getWidth() / 2 + elementAreaWidth / 2 + 30,
@@ -149,8 +152,8 @@ public class Stage {
 				50,
 				window.getHeight() - elementAreaHeight - 30
 				);
-		g.drawString("nターン",
-				50,
+		g.drawString("ターン",
+				100,
 				window.getHeight() - elementAreaHeight
 				);
 		g.drawString("ポーズ",
