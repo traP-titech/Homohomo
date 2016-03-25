@@ -17,7 +17,7 @@ public class Stage {
 
 	int mx, my;
 	int elementSize;
-	Font englishFont, japaneseFont;
+	Font englishFont, englishFontLarge, japaneseFont, japaneseFontSmall, japaneseFontLarge;
 	long score = 12345678L;
 
 	public Stage(JFrame window, int width, int height) {
@@ -35,7 +35,10 @@ public class Stage {
 		elementSize = elementAreaHeight / height;
 
 		englishFont = Utils.createFont("helsinki.ttf").deriveFont(Font.PLAIN, 35);
+		englishFontLarge = Utils.createFont("helsinki.ttf").deriveFont(Font.PLAIN, 54);
 		japaneseFont = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 27);
+		japaneseFontSmall = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 21);
+		japaneseFontLarge = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 32);
 	}
 
 	void step() {
@@ -86,16 +89,16 @@ public class Stage {
 
 		g.setColor(new Color(247, 155, 55));
 		g.fillRoundRect(22,
-				window.getHeight() - elementAreaHeight + 295,
+				window.getHeight() - elementAreaHeight + 290,
 				175, 46, 20, 20);	// 左ボックス特殊上
 		g.fillRoundRect(22,
-				window.getHeight() - elementAreaHeight + 350,
+				window.getHeight() - elementAreaHeight + 345,
 				175, 46, 20, 20);	// 左ボックス特殊下
 		g.fillRoundRect(603,
-				window.getHeight() - elementAreaHeight + 295,
+				window.getHeight() - elementAreaHeight + 290,
 				175, 46, 20, 20);	// 右ボックス特殊上
 		g.fillRoundRect(603,
-				window.getHeight() - elementAreaHeight + 350,
+				window.getHeight() - elementAreaHeight + 345,
 				175, 46, 20, 20);	// 右ボックス特殊下
 		g.fillRoundRect(603,
 				window.getHeight() - elementAreaHeight + 410,
@@ -118,16 +121,16 @@ public class Stage {
 				190, 350, 20, 20);
 
 		g.drawRoundRect(22,
-				window.getHeight() - elementAreaHeight + 295,
+				window.getHeight() - elementAreaHeight + 290,
 				175, 46, 20, 20);
 		g.drawRoundRect(22,
-				window.getHeight() - elementAreaHeight + 350,
+				window.getHeight() - elementAreaHeight + 345,
 				175, 46, 20, 20);
 		g.drawRoundRect(603,
-				window.getHeight() - elementAreaHeight + 295,
+				window.getHeight() - elementAreaHeight + 290,
 				175, 46, 20, 20);
 		g.drawRoundRect(603,
-				window.getHeight() - elementAreaHeight + 350,
+				window.getHeight() - elementAreaHeight + 345,
 				175, 46, 20, 20);
 		g.drawRoundRect(603,
 				window.getHeight() - elementAreaHeight + 410,
@@ -135,27 +138,29 @@ public class Stage {
 		g.setFont(englishFont);
 		g.setColor(Color.BLACK);
 		g.drawString("NEXT",
-				window.getWidth() / 2 - elementAreaWidth / 2 - 100,
+				window.getWidth() / 2 - elementAreaWidth / 2 - 110,
 				window.getHeight() - elementSize + 15);
 		g.drawString(String.valueOf(score),
 				window.getWidth() / 2 + elementAreaWidth / 2 + 30,
 				window.getHeight() - elementAreaHeight + 10);
+		g.setFont(englishFontLarge);
 		g.drawString("10"/*残りターン数*/,
-				50,
-				window.getHeight() - elementAreaHeight);
-		g.setFont(japaneseFont);
+				40,
+				window.getHeight() - elementAreaHeight + 20);
+		g.setFont(japaneseFontSmall);
 		g.drawString("すこあ",
 				window.getWidth() / 2 + elementAreaWidth / 2 + 30,
 				window.getHeight() - elementAreaHeight - 30
 				);
 		g.drawString("のこり",
-				50,
+				40,
 				window.getHeight() - elementAreaHeight - 30
 				);
 		g.drawString("ターン",
 				100,
-				window.getHeight() - elementAreaHeight
+				window.getHeight() - elementAreaHeight + 20
 				);
+		g.setFont(japaneseFont);
 		g.drawString("ポーズ",
 				window.getWidth() / 2 + elementAreaWidth / 2 + 70,
 				window.getHeight() - 40
