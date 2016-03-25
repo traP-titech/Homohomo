@@ -1,14 +1,33 @@
-import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class Element {
 
-	public enum Type {RED, GREEN, YELLOW};
+	public enum Type {RED, GREEN, YELLOW, BLUE};
 
 	public int x, y;
 	public int gx, gy;
 	public Type type;
 	private final Stage stage;
+	private static final BufferedImage[] images;
+	
+	static {
+		images = new BufferedImage[6];
+		try {
+			images[0] = ImageIO.read(Main.class.getResource("bomb_red.png"));
+			images[1] = ImageIO.read(Main.class.getResource("bomb_green.png"));
+			images[2] = ImageIO.read(Main.class.getResource("bomb_yellow.png"));
+			images[3] = ImageIO.read(Main.class.getResource("bomb_blue.png"));
+			images[4] = ImageIO.read(Main.class.getResource("bomb_white.png"));
+			images[5] = ImageIO.read(Main.class.getResource("bomb_rock.png"));
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
 
 	public Element(Stage stage, int x, int y) {
 		this.stage = stage;
@@ -37,22 +56,23 @@ public class Element {
 
 	void draw(Graphics2D g) {
 
-		Color color = null;
+		BufferedImage image = null;
 		switch (type) {
 		case RED:
-			color = Color.RED;
+			image = images[0];
 			break;
 		case GREEN:
-			color = Color.GREEN;
+			image = images[1];
 			break;
 		case YELLOW:
-			color = Color.YELLOW;
+			image = images[2];
+			break;
+		case BLUE:
+			image = images[3];
 			break;
 		}
-		
-		if(killed) color = Color.WHITE;
-		g.setColor(color);
-		g.fillOval(gx, gy, stage.elementSize, stage.elementSize);
+
+		if(!killed) g.drawImage(image, gx, gy, stage.elementSize, stage.elementSize, null);
 	}
 	
 	// 消す
@@ -84,10 +104,12 @@ public class Element {
 	public Type getNextColor(){
 		switch (type) {
 		case RED:
-			return Type.GREEN;
-		case GREEN:
 			return Type.YELLOW;
+		case GREEN:
+			return Type.BLUE;
 		case YELLOW:
+			return Type.GREEN;
+		case BLUE:
 			return Type.RED;
 		default:
 			return null;
@@ -99,7 +121,7 @@ public class Element {
 	}
 	
 	int getY(int y) {
-		if (y == stage.height-1) return stage.window.getHeight() - stage.elementAreaHeight + stage.elementSize * y - 20;
-		return stage.window.getHeight() - stage.elementAreaHeight + stage.elementSize * y - 30;
+		if (y == stage.height-1) return stage.window.getHeight() - stage.elementAreaHeight + stage.elementSize * y - 10;
+		return stage.window.getHeight() - stage.elementAreaHeight + stage.elementSize * y - 20;
 	}
 }

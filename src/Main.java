@@ -19,11 +19,12 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 
 	private final JFrame window;
 	private final BufferStrategy buffer;
-	private Stage stage;
+	private Scene currentScene;
 
 	public Main() {
 		window = new JFrame("ホモホモ💩ホモ");
 		window.setSize(800, 600);
+		window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
 		window.createBufferStrategy(2);
@@ -31,7 +32,8 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 		window.addMouseListener(this);
 		window.addMouseMotionListener(this);
 		buffer = window.getBufferStrategy();
-		stage = new Stage(window, 10, 11);
+
+		currentScene = new GameScene(window);
 
 		new Timer().schedule(new TimerTask(){
 
@@ -57,10 +59,11 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 		}, 0, 17);
 	}
 
+	Color background = new Color(245, 211, 94);
 	void mainLoop(Graphics2D g) {
-		g.setColor(Color.WHITE);
+		g.setColor(background);
 		g.fillRect(0, 0, window.getWidth(), window.getHeight());
-		stage.mainLoop(g);
+		currentScene = currentScene.mainLoop(g);
 	}
 
 	@Override
@@ -102,7 +105,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO 自動生成されたメソッド・スタブ
-		stage.mousePressed(e);
+		currentScene.mousePressed(e);
 	}
 
 	@Override
@@ -114,7 +117,7 @@ public class Main implements MouseListener, MouseMotionListener, KeyListener {
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO 自動生成されたメソッド・スタブ
-		stage.mouseDragged(e);
+		currentScene.mouseDragged(e);
 	}
 
 	@Override
