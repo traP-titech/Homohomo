@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class Stage {
@@ -18,6 +21,15 @@ public class Stage {
 	public final JFrame window;
 	public final int width, height;
 	private final Element[][] elements;
+	
+	private static BufferedImage bury;
+	static{
+		try{
+			bury = ImageIO.read(Main.class.getResource("bury.png"));			
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
 	
 	private enum State{
 		WAITING,
@@ -32,8 +44,16 @@ public class Stage {
 	int mx, my;
 	int elementSize;
 	Font englishFont, japaneseFont;
+	
 	static final int LIFT_REM_TURN = 5;
-	int liftRemainTurn = 5;
+	int liftRemainTurn;
+	
+	static final int PLAYER_HP_MAX = 100;
+	int playerHP;
+	
+	static final int ENEMY_HP_MAX = 100;
+	int enemyHP;
+	
 	long score = 1145141919810L;
 	public Bakuhatsu baku;
 	int ballcount=0;
@@ -58,6 +78,8 @@ public class Stage {
 		clicked = false;
 		
 		liftRemainTurn = LIFT_REM_TURN;
+		playerHP = PLAYER_HP_MAX;
+		enemyHP = ENEMY_HP_MAX;
 		score = 364364;
 
 		englishFont = Utils.createFont("helsinki.ttf").deriveFont(Font.PLAIN, 35);
@@ -107,6 +129,15 @@ public class Stage {
 	int eraseiter;
 	
 	Element[] topelements;
+	
+	int erasecnt;
+	int flowcnt;
+	
+	int progress;
+	
+	int moto_playerHP;
+	int moto_enemyHP;
+	long moto_score;
 
 	void step() {
 		//エレメント更新
@@ -149,7 +180,7 @@ public class Stage {
 			if(flag){
 				eraseiter++;
 				if(eraseiter == erasemax){
-					int cnt = 0;
+					erasecnt = 0;
 					for(int i=0;i<width;++i){
 						int s = height-1;
 						for(int j=height-1;j>=0;--j){
@@ -157,14 +188,13 @@ public class Stage {
 								elements[i][s] = elements[i][j];
 								--s;
 							}else if(!(elements[i][j] instanceof NullElement)){
-								++cnt;
+								++erasecnt;
 							}
 						}
 						for(int j=s;j>=0;--j){
 							elements[i][j] = new NullElement(this,i,j);
 						}
 					}
-					score += 364*cnt;
 					for(int i=0;i<width;++i)for(int j=0;j<height-1;++j)elements[i][j].fall(j);
 					state = State.FALLING;
 				}else{
@@ -183,8 +213,7 @@ public class Stage {
 			// 落下が終わってるかチェック
 			for(int i=0;i<width;++i)for(int j=0;j<height-1;++j)flag &= !elements[i][j].isFalling;
 			if(flag){
-				--liftRemainTurn;
-				if(liftRemainTurn <= 0){
+				if(liftRemainTurn <= 1){
 					for(int i=0;i<width;++i)for(int j=0;j<height;++j)elements[i][j].lift();
 				}
 				state = State.LIFTING;
@@ -193,13 +222,13 @@ public class Stage {
 		case LIFTING:
 			for(int i=0;i<width;++i)for(int j=0;j<height;++j)flag &= !elements[i][j].isLifting;
 			if(flag){
-				if(liftRemainTurn <= 0){
-					int cnt = 0;
+				flowcnt = 0;
+				if(liftRemainTurn <= 1){
 					for(int i=0;i<width;++i)if(!(elements[i][0] instanceof NullElement)){
 						elements[i][0].erase();
 						topelements[i] = elements[i][0];
 						elements[i][0] = new NullElement(this,i,0);
-						++cnt;
+						++flowcnt;
 					}
 					for(int i=0;i<width;++i){
 						for(int j=0;j<height-1;++j){
@@ -207,14 +236,35 @@ public class Stage {
 						}
 						elements[i][height-1] = new Element(this,i,height-1);
 					}
-					// cnt だけ 自分に ダメージ 入れといて
-					liftRemainTurn = LIFT_REM_TURN;
 				}
+				--liftRemainTurn;
+				if(liftRemainTurn<=0)liftRemainTurn = LIFT_REM_TURN;
 				state = State.AFTER_EFFECT;
+				progress = 0;
+				moto_playerHP = playerHP;
+				moto_enemyHP = enemyHP;
+				moto_score = score;
 			}
 			break;
 		case AFTER_EFFECT:
-			state = State.WAITING;
+			// score += erasecnt * 100
+			// playerHP -= flowcnt * 2
+			// enemyHP -= erasecnt
+			++progress;
+			if(progress >= 30){
+				playerHP = moto_playerHP - flowcnt * 2;
+				enemyHP = moto_enemyHP - erasecnt;
+				moto_score = score + erasecnt * 100;
+				if(playerHP<0)playerHP = 0;
+				if(enemyHP<0)enemyHP = 0;
+				state = State.WAITING;
+			}else{
+				playerHP = moto_playerHP - flowcnt * 2 * progress / 30;
+				enemyHP = moto_enemyHP - erasecnt * progress / 30;
+				if(playerHP<0)playerHP = 0;
+				if(enemyHP<0)enemyHP = 0;
+				score = moto_score + erasecnt * 100 * progress / 30;
+			}
 			break;
 		}
 		clicked = false;
@@ -255,6 +305,13 @@ public class Stage {
 		g.fillRoundRect(595,
 				window.getHeight() - elementAreaHeight + 50,
 				190, 350, 20, 20);
+
+		int playerH = 350*(100-playerHP)/100;
+		int playerY = window.getHeight() - elementAreaHeight + 50 + 350 - playerH;
+		g.drawImage(bury, 15, playerY, 190, playerH, null);
+		int enemyH = 350*(100-enemyHP)/100;
+		int enemyY = window.getHeight() - elementAreaHeight + 50 + 350 - enemyH;
+		g.drawImage(bury, 595, enemyY, 190, enemyH, null);
 
 		g.setColor(new Color(247, 155, 55));
 		g.fillRoundRect(22,
@@ -330,6 +387,7 @@ public class Stage {
 				window.getHeight() - 40
 				);
 
+		
 		bombtimer--;
 		//エレメント描画
 		for (int i = 0; i < width; i++) {
