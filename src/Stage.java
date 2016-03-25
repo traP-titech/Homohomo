@@ -31,6 +31,8 @@ public class Stage {
 	int mx, my;
 	int elementSize;
 	Font englishFont, japaneseFont;
+	static final int LIFT_REM_TURN = 5;
+	int liftRemainTurn = 5;
 	long score = 1145141919810L;
 
 	public Stage(JFrame window, int width, int height) {
@@ -50,6 +52,9 @@ public class Stage {
 		}
 		state = State.WAITING;
 		clicked = false;
+		
+		liftRemainTurn = LIFT_REM_TURN;
+		score = 364364;
 
 		englishFont = Utils.createFont("helsinki.ttf").deriveFont(Font.PLAIN, 35);
 		japaneseFont = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 27);
@@ -129,18 +134,22 @@ public class Stage {
 			if(flag){
 				eraseiter++;
 				if(eraseiter == erasemax){
+					int cnt = 0;
 					for(int i=0;i<width;++i){
 						int s = height-1;
 						for(int j=height-1;j>=0;--j){
 							if(!elements[i][j].killed){
 								elements[i][s] = elements[i][j];
 								--s;
+							}else if(!(elements[i][j] instanceof NullElement)){
+								++cnt;
 							}
 						}
 						for(int j=s;j>=0;--j){
 							elements[i][j] = new NullElement(this,i,j);
 						}
 					}
+					score += 364*cnt;
 					for(int i=0;i<width;++i)for(int j=0;j<height-1;++j)elements[i][j].fall(j);
 					state = State.FALLING;
 				}else{
@@ -159,27 +168,33 @@ public class Stage {
 			// 落下が終わってるかチェック
 			for(int i=0;i<width;++i)for(int j=0;j<height-1;++j)flag &= !elements[i][j].isFalling;
 			if(flag){
-				for(int i=0;i<width;++i)for(int j=0;j<height;++j)elements[i][j].lift();
+				--liftRemainTurn;
+				if(liftRemainTurn <= 0){
+					for(int i=0;i<width;++i)for(int j=0;j<height;++j)elements[i][j].lift();
+				}
 				state = State.LIFTING;
 			}
 			break;
 		case LIFTING:
 			for(int i=0;i<width;++i)for(int j=0;j<height;++j)flag &= !elements[i][j].isLifting;
 			if(flag){
-				int cnt = 0;
-				for(int i=0;i<width;++i)if(!(elements[i][0] instanceof NullElement)){
-					elements[i][0].erase();
-					topelements[i] = elements[i][0];
-					elements[i][0] = new NullElement(this,i,0);
-					++cnt;
-				}
-				for(int i=0;i<width;++i){
-					for(int j=0;j<height-1;++j){
-						elements[i][j] = elements[i][j+1];
+				if(liftRemainTurn <= 0){
+					int cnt = 0;
+					for(int i=0;i<width;++i)if(!(elements[i][0] instanceof NullElement)){
+						elements[i][0].erase();
+						topelements[i] = elements[i][0];
+						elements[i][0] = new NullElement(this,i,0);
+						++cnt;
 					}
-					elements[i][height-1] = new Element(this,i,height-1);
+					for(int i=0;i<width;++i){
+						for(int j=0;j<height-1;++j){
+							elements[i][j] = elements[i][j+1];
+						}
+						elements[i][height-1] = new Element(this,i,height-1);
+					}
+					// cnt だけ 自分に ダメージ 入れといて
+					liftRemainTurn = LIFT_REM_TURN;
 				}
-				// cnt だけ 自分に ダメージ 入れといて
 				state = State.AFTER_EFFECT;
 			}
 			break;
@@ -292,7 +307,7 @@ public class Stage {
 				50,
 				window.getHeight() - elementAreaHeight - 30
 				);
-		g.drawString("nターン",
+		g.drawString(liftRemainTurn + "ターン",
 				50,
 				window.getHeight() - elementAreaHeight
 				);

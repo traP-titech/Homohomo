@@ -39,7 +39,12 @@ public class Element {
 	}
 
 	void step() {
-		if(isFalling){
+		if(isErasing){
+			++erasecnt;
+			if(erasecnt >= 10){
+				isErasing = false;
+			}
+		}else if(isFalling){
 			gy += vy;
 			if(gy >= target_y){
 				gy = target_y;
@@ -78,9 +83,12 @@ public class Element {
 	// 消す
 	int target_y = -1;
 	int vy = 0;
+	int erasecnt;
 	public boolean isErasing = false;
 	public boolean killed = false;
 	public void erase(){
+		erasecnt = 0;
+		isErasing = true;
 		killed = true;
 	}
 	
