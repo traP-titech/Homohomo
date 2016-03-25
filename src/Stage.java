@@ -285,7 +285,7 @@ public class Stage {
 			if(progress >= 30){
 				playerHP = moto_playerHP - flowcnt * 2;
 				enemyHP = moto_enemyHP - erasecnt;
-				moto_score = score + erasecnt * 100;
+				score = moto_score + erasecnt * 100;
 				if(playerHP<0)playerHP = 0;
 				if(enemyHP<0)enemyHP = 0;
 				state = State.WAITING;
