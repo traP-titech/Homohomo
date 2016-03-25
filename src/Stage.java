@@ -35,11 +35,10 @@ public class Stage {
 	static final int LIFT_REM_TURN = 5;
 	int liftRemainTurn = 5;
 	long score = 1145141919810L;
-	public Bakuhatsu baku;
+	
 	int ballcount=0;
 
 	public Stage(JFrame window, int width, int height) {
-		baku = new Bakuhatsu();
 		this.window = window;
 		this.width = width;
 		this.height = height;
@@ -58,7 +57,7 @@ public class Stage {
 		clicked = false;
 		
 		liftRemainTurn = LIFT_REM_TURN;
-		score = 364364;
+		score = 0;
 
 		englishFont = Utils.createFont("helsinki.ttf").deriveFont(Font.PLAIN, 35);
 		japaneseFont = Utils.createFont("yasashisa_bold.ttf").deriveFont(Font.PLAIN, 27);
@@ -345,11 +344,7 @@ public class Stage {
 		//灰色フィルター
 		g.setColor(new Color(100, 100, 100, 100));
 		g.fillRect(window.getWidth()/2 - elementAreaWidth / 2, window.getHeight() - elementAreaHeight + elementSize * (height-1) - 10, elementAreaWidth, elementSize);
-		if(bombtimer <= 1){
-			bombtimer = 60;
-		}
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,bombtimer/60f));
-		baku.draw(g);
+
 	}
 
 	void mousePressed(MouseEvent e) {
