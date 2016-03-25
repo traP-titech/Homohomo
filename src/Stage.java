@@ -25,6 +25,7 @@ public class Stage {
 	}
 	private State state;
 
+	boolean clicked = false;
 	int mx, my;
 	int elementSize;
 
@@ -33,16 +34,19 @@ public class Stage {
 		this.width = width;
 		this.height = height;
 		this.elements = new Element[width][height];
+		this.topelements = new Element[width];
+		
+		elementAreaWidth = elementAreaHeight * width / height;
+		elementSize = elementAreaHeight / height;
+		
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				elements[i][j] = new Element(this, i, j);
 			}
 		}
-
-		elementAreaWidth = elementAreaHeight * width / height;
-		elementSize = elementAreaHeight / height;
 		
 		state = State.WAITING;
+		clicked = false;
 	}
 
 	void mainLoop(Graphics2D g) {
@@ -50,10 +54,10 @@ public class Stage {
 		draw(g);
 	}
 	
-	Vector<Integer>[] eraselist;
+	Vector<Vector<Integer>> eraselist;
 	int puzzleBFS(int x, int y){
-		int[][] visited = new int[width][height];
-		for(int i=0;i<width;++i)for(int j=0;j<height;++j)visited[i][j]=-1;
+		int[][] visited = new int[width][height-1];
+		for(int i=0;i<width;++i)for(int j=0;j<height-1;++j)visited[i][j]=-1;
 		Queue<int[]> q = new ArrayDeque<int[]>();
 		visited[x][y] = 0;
 		q.add(new int[]{x,y});
@@ -63,50 +67,127 @@ public class Stage {
 		while(q.peek() != null){
 			int[] p = q.poll();
 			int val = visited[p[0]][p[1]];
+			Element.Type nextType = elements[p[0]][p[1]].getNextColor();
 			for(int i=0;i<4;++i){
 				int nx = p[0] + dx[i];
 				int ny = p[1] + dy[i];
-				if(/*ここに連鎖条件*/false){
+				if(0<=nx && nx<width && 0<=ny && ny<height-1 &&
+					visited[nx][ny] == -1 && elements[nx][ny].type == nextType){
 					visited[nx][ny] = val+1;
 					res = val+1;
 					q.add(new int[]{nx,ny});
 				}
 			}
 		}
+		eraselist = new Vector<Vector<Integer>>();
+		eraselist.setSize(res+1);
+		for(int i=0;i<=res;++i){
+			eraselist.set(i, new Vector<Integer>());
+		}
+		for(int i=0;i<width;++i)for(int j=0;j<height-1;++j){
+			int val = visited[i][j];
+			if(val!=-1){
+				eraselist.get(val).addElement(i*height+j);
+			}
+		}
 		return res;
 	}
+	
+	int erasemax;
+	int eraseiter;
+	
+	Element[] topelements;
 
 	void step() {
-		switch (state) {
-		case WAITING:
-			int id = selectElement(mx,my);
-			if(id!=-1){
-				int x = id/height;
-				int y = id%height;
-				// erase calculation
-				int num = puzzleBFS(x, y);
-				// phase proceed
-			}
-			break;
-		case ERASING:
-			//
-			break;
-		case FALLING:
-			//
-			break;
-		case LIFTING:
-			//
-			break;
-		case AFTER_EFFECT:
-			//
-			break;
-		}
 		//エレメント更新
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				elements[i][j].step();
 			}
 		}
+		// フェーズ分け
+		boolean flag = true;
+		switch (state) {
+		case WAITING:
+			if(clicked){
+				int id = selectElement(mx,my);
+				if(id!=-1){
+					System.out.println(id);
+					int x = id/height;
+					int y = id%height;
+					// erase calculation
+					erasemax = puzzleBFS(x, y)+1;
+					eraseiter = -1;
+					// phase proceed
+					state = State.ERASING;
+				}
+			}
+			break;
+		case ERASING:
+			// 消去が終わってるかチェック
+			for(int i=0;i<width;++i)for(int j=0;j<height-1;++j)flag &= !elements[i][j].isErasing;
+			if(flag){
+				eraseiter++;
+				if(eraseiter == erasemax){
+					for(int i=0;i<width;++i){
+						int s = height-1;
+						for(int j=height-1;j>=0;--j){
+							if(!elements[i][j].killed){
+								elements[i][s] = elements[i][j];
+								--s;
+							}
+						}
+						for(int j=s;j>=0;--j){
+							elements[i][j] = new NullElement(this,i,j);
+						}
+					}
+					for(int i=0;i<width;++i)for(int j=0;j<height-1;++j)elements[i][j].fall(j);
+					state = State.FALLING;
+				}else{
+					int sz = eraselist.get(eraseiter).size();
+					for(int i=0;i<sz;++i){
+						int id = eraselist.get(eraseiter).get(i);
+						int x = id/height;
+						int y = id%height;
+//						System.out.println("("+x+","+y+")");
+						elements[x][y].erase();
+					}
+				}
+			}
+			break;
+		case FALLING:
+			// 落下が終わってるかチェック
+			for(int i=0;i<width;++i)for(int j=0;j<height-1;++j)flag &= !elements[i][j].isFalling;
+			if(flag){
+				for(int i=0;i<width;++i)for(int j=0;j<height;++j)elements[i][j].lift();
+				state = State.LIFTING;
+			}
+			break;
+		case LIFTING:
+			for(int i=0;i<width;++i)for(int j=0;j<height;++j)flag &= !elements[i][j].isLifting;
+			if(flag){
+				int cnt = 0;
+				for(int i=0;i<width;++i)if(!(elements[i][0] instanceof NullElement)){
+					elements[i][0].erase();
+					topelements[i] = elements[i][0];
+					elements[i][0] = new NullElement(this,i,0);
+					++cnt;
+				}
+				for(int i=0;i<width;++i){
+					for(int j=0;j<height-1;++j){
+						elements[i][j] = elements[i][j+1];
+					}
+					elements[i][height-1] = new Element(this,i,height-1);
+				}
+				// cnt だけ 自分に ダメージ 入れといて
+				state = State.AFTER_EFFECT;
+			}
+			break;
+		case AFTER_EFFECT:
+			state = State.WAITING;
+			break;
+		}
+		clicked = false;
 	}
 
 	void draw(Graphics2D g) {
@@ -130,6 +211,7 @@ public class Stage {
 	void mousePressed(MouseEvent e) {
 		this.mx = e.getX();
 		this.my = e.getY();
+		clicked = true;
 	}
 
 	void mouseDragged(MouseEvent e) {
@@ -144,11 +226,13 @@ public class Stage {
 		int y = (int)((my - (window.getHeight() - elementAreaHeight) + 30) / elementSize);
 		if(0<=x && x<width && 0<=y && y<height){
 			Element e = elements[x][y];
-			float dx = (float)(e.getX()+elementSize/2f - mx);
-			float dy = (float)(e.getY()+elementSize/2f - my); 
-			if(dx*dx + dy*dy <= elementSize*elementSize){
-				// pushed
-				return x*height+y;
+			if(!(e instanceof NullElement)){
+				float dx = (float)(e.getX(x)+elementSize/2f - mx);
+				float dy = (float)(e.getY(y)+elementSize/2f - my); 
+				if(dx*dx + dy*dy <= elementSize*elementSize){
+					// pushed
+					return x*height+y;
+				}
 			}
 		}
 		return -1;
