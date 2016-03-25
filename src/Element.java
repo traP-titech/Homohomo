@@ -1,3 +1,4 @@
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -5,7 +6,12 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+
 public class Element {
+	public int bombtime = 60;
+	public boolean endcheck=true;
+	public boolean erase = false;
+	public int specolor = 0;
 
 	public enum Type {RED, GREEN, YELLOW, BLUE};
 
@@ -17,10 +23,11 @@ public class Element {
 	private int count;
 	private double scale;
 	private static final BufferedImage[] images;
-
+	static BufferedImage img;
 	static {
 		images = new BufferedImage[6];
 		try {
+			img = ImageIO.read(Main.class.getResource("bomb.png"));
 			images[0] = ImageIO.read(Main.class.getResource("bomb_red.png"));
 			images[1] = ImageIO.read(Main.class.getResource("bomb_green.png"));
 			images[2] = ImageIO.read(Main.class.getResource("bomb_yellow.png"));
@@ -42,9 +49,13 @@ public class Element {
 		this.type = Utils.randomSelect(Type.values());
 		count = (int)(Math.random() * 20);
 	}
-
 	void step() {
-		if(isFalling){
+		if(isErasing){
+			++erasecnt;
+			if(erasecnt >= 10){
+				isErasing = false;
+			}
+		}else if(isFalling){
 			gy += vy;
 			if(gy >= target_y){
 				gy = target_y;
@@ -57,7 +68,6 @@ public class Element {
 				isLifting = false;
 			}
 		}
-
 		count++;
 		angle = Math.sin(count * 0.1) * 0.1;
 		scale = 1 + Math.sin(count * 0.1) * 0.05;
@@ -66,6 +76,8 @@ public class Element {
 	void draw(Graphics2D g) {
 
 		BufferedImage image = null;
+		BufferedImage image2= null;
+		image2 = img;
 		switch (type) {
 		case RED:
 			image = images[0];
@@ -79,6 +91,20 @@ public class Element {
 		case BLUE:
 			image = images[3];
 			break;
+		}
+		if(specolor == 1){
+			image = images[5];
+		}else if(specolor == 2){
+			image = images[4];
+		}
+		if(killed){
+			bombtime--;
+			if(bombtime <= 1){
+				bombtime = 1;
+			}
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,bombtime/60f));
+			g.drawImage(img,gx,gy,null);
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
 		}
 		if(!killed) {
 			AffineTransform af = g.getTransform();
@@ -95,9 +121,12 @@ public class Element {
 	// 消す
 	int target_y = -1;
 	int vy = 0;
+	int erasecnt;
 	public boolean isErasing = false;
 	public boolean killed = false;
 	public void erase(){
+		erasecnt = 0;
+		isErasing = true;
 		killed = true;
 	}
 
